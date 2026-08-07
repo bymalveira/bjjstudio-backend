@@ -15,11 +15,11 @@ export async function criarSessao({
   notaGeral,
   data,
 }: CriarSessaoInput) {
-  return prisma.trainingSession.create({
+  return await prisma.trainingSession.create({
     data: { local, professor, duracao, notaGeral, data },
   });
 }
 
 export async function listarSessoes() {
-  return prisma.trainingSession.findMany();
+  return await prisma.trainingSession.findMany();
 }

@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client" // {/* gera o client do prisma que a aplicação vai usar pra fazer as queries */}
+  output   = "../generated/prisma" // {/* pasta onde o client gerado vai ficar */}
+}
+
+datasource db {
+  provider = "postgresql" // {/* banco usado é postgres; a url de conexão fica no prisma.config.ts, não aqui (mudança do prisma 7) */}
+}
+
+// {/* resultado possível de um round de sparring */}
+enum SparringResult {
+  FUI_PASSADO
+  PASSEI
+  FINALIZEI
+  FUI_FINALIZADO
+  NENHUM
+}
+
+// {/* faixas de jiu-jitsu, usadas pra registrar a faixa do parceiro de treino */}
+enum Belts {
+  BRANCA
+  CINZA
+  AMARELA
+  LARANJA
+  VERDE
+  AZUL
+  ROXA
+  MARROM
+  PRETA
+}
+
+// {/* posições granulares, separando os tipos de guarda pra permitir queries tipo "quantas vezes fui passado pela guarda fechada" */}
+enum Position {
+  EM_PE // {/* luta em pé, sem ninguém no chão ainda */}
+
+  GUARDA_FECHADA
+  GUARDA_ABERTA
+  MEIA_GUARDA
+  CINQUENTA_CINQUENTA
+  DE_LA_RIVA
+  GUARDA_ARANHA
+  GUARDA_BORBOLETA
+  GUARDA_X
+
+  MONTADA // {/* você ou o parceiro montado em cima */}
+  QUATRO_APOIOS // {/* posição de defesa em base de quatro apoios (turtle) */}
+  LATERAL // {/* controle 100kg / cem quilo */}
+  NORTE_SUL
+  COSTAS // {/* controle de costas, com ou sem ganchos */}
+}
+
+model TrainingSession {
+  id        String   @id @default(uuid()) // {/* identificador único da sessão */}
+  local     String // {/* onde o treino aconteceu */}
+  professor String // {/* quem deu a aula */}
+  duracao   Int // {/* duração do treino em minutos */}
+  notaGeral Int // {/* nota geral do treino (ex: 1 a 5), validado na camada de aplicação */}
+  data      DateTime // {/* data do treino */}
+  createAt  DateTime @default(now()) // {/* data de criação do registro */}
+  updateAt  DateTime @updatedAt // {/* atualizada automaticamente a cada edição do registro */}
+
+  drills            Drill[] // {/* uma sessão pode ter vários drills */}
+  sparrings         SparringRound[] // {/* uma sessão pode ter vários rounds de sparring */}
+  specificTrainings SpecificTraining[] // {/* uma sessão pode ter vários blocos de treino específico */}
+}
+
+model Drill {
+  id         String  @id @default(uuid()) // {/* identificador único do drill */}
+  tecnica    String // {/* qual técnica foi treinada */}
+  repeticoes Int // {/* quantas repetições foram feitas */}
+  tempo      Int // {/* tempo gasto no drill, em minutos */}
+  nota       String? // {/* observação livre, opcional */}
+
+  trainingSessionId String // {/* chave estrangeira: a qual sessão esse drill pertence */}
+  trainingSession    TrainingSession @relation(fields: [trainingSessionId], references: [id], onDelete: Cascade) // {/* se a sessão for apagada, o drill some junto */}
+}
+
+model SparringRound {
+  id             String         @id @default(uuid()) // {/* identificador único do round */}
+  resultado      SparringResult // {/* como o round terminou */}
+  posicaoInicial Position // {/* posição em que o round começou */}
+  posicaoFinal   Position // {/* posição em que o round terminou */}
+  tempo          Int // {/* duração do round, em minutos */}
+  nota           String? // {/* observação livre, opcional */}
+
+  parceiroId String // {/* chave estrangeira: com quem foi o round (não é @unique, pois o mesmo parceiro pode aparecer em vários rounds) */}
+  parceiro   Partner @relation(fields: [parceiroId], references: [id], onDelete: Cascade) // {/* se o parceiro for apagado, os rounds com ele somem junto */}
+
+  trainingSessionId String // {/* chave estrangeira: a qual sessão esse round pertence */}
+  trainingSession    TrainingSession @relation(fields: [trainingSessionId], references: [id], onDelete: Cascade) // {/* se a sessão for apagada, o round some junto */}
+}
+
+model SpecificTraining {
+  id               String  @id @default(uuid()) // {/* identificador único do treino específico */}
+  guardaTrabalhada Position // {/* qual guarda foi o foco do treino */}
+  passagemTrabalhada String // {/* qual passagem foi trabalhada (texto livre, já que não é uma posição fixa) */}
+  funcionou        Boolean // {/* se a técnica funcionou ou não nesse treino */}
+  nota             String? // {/* observação livre sobre o que funcionou/não funcionou, opcional */}
+
+  parceiroId String // {/* chave estrangeira: com quem foi o treino específico */}
+  parceiro   Partner @relation(fields: [parceiroId], references: [id], onDelete: Cascade) // {/* se o parceiro for apagado, os treinos com ele somem junto */}
+
+  trainingSessionId String // {/* chave estrangeira: a qual sessão esse treino específico pertence */}
+  trainingSession    TrainingSession @relation(fields: [trainingSessionId], references: [id], onDelete: Cascade) // {/* se a sessão for apagada, o treino específico some junto */}
+}
+
+model Partner {
+  id    String @id @default(uuid()) // {/* identificador único do parceiro */}
+  nome  String // {/* nome do parceiro de treino */}
+  faixa Belts // {/* faixa do parceiro */}
+
+  sparrings          SparringRound[] // {/* um parceiro pode aparecer em vários rounds de sparring */}
+  specificTrainings SpecificTraining[] // {/* um parceiro pode aparecer em vários treinos específicos */}
+}

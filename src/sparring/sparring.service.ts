@@ -34,5 +34,5 @@ export async function criarSparring({
 }
 
 export async function listarSparrings() {
-  return prisma.sparringRound.findMany();
+  return await prisma.sparringRound.findMany();
 }

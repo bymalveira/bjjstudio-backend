@@ -6,7 +6,8 @@ export async function criarEspecificoController(
   res: Response,
   next: NextFunction,
 ) {
-  const data = req.body;
+  const data = (req as any).validatedData;
+
   const spacific = await criarEspecifico(data);
 
   return res.status(201).json(spacific);

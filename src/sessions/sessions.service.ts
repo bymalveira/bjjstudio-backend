@@ -1,12 +1,8 @@
 import { prisma } from "../lib/prisma";
+import * as z from "zod";
+import { criarSessaoSchema } from "./sessions.schema";
 
-type CriarSessaoInput = {
-  local: string;
-  professor: string;
-  duracao: number;
-  notaGeral: number;
-  data: Date;
-};
+type CriarSessaoInput = z.infer<typeof criarSessaoSchema>;
 
 export async function criarSessao({
   local,

@@ -1,10 +1,8 @@
-import type { Belts } from "../../generated/prisma/enums";
+import * as z from "zod";
 import { prisma } from "../lib/prisma";
+import { criarParceiroSchema } from "./partners.schema";
 
-type CriarParceiroInput = {
-  nome: string;
-  faixa: Belts;
-};
+type CriarParceiroInput = z.infer<typeof criarParceiroSchema>;
 
 export async function criarParceiro({ nome, faixa }: CriarParceiroInput) {
   return await prisma.partner.create({

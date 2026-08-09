@@ -6,7 +6,8 @@ export async function criarParceiroController(
   res: Response,
   next: NextFunction,
 ) {
-  const data = req.body;
+  const data = (req as any).validatedData;
+
   const parceiro = await criarParceiro(data);
 
   return res.status(201).json(parceiro);

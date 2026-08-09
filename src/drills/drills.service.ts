@@ -1,12 +1,8 @@
 import { prisma } from "../lib/prisma";
+import * as z from "zod";
+import { criarDrillSchema } from "./drills.schema";
 
-type CriarDrillInput = {
-  tecnica: string;
-  repeticoes: number;
-  tempo: number;
-  nota?: string;
-  trainingSessionId: string;
-};
+type CriarDrillInput = z.infer<typeof criarDrillSchema>;
 
 export async function criarDrill({
   tecnica,

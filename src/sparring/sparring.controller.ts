@@ -6,7 +6,8 @@ export async function criarSparringController(
   res: Response,
   next: NextFunction,
 ) {
-  const data = req.body;
+  const data = (req as any).validatedData;
+
   const sparring = await criarSparring(data);
 
   return res.status(201).json(sparring);

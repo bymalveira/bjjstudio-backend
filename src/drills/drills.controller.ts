@@ -6,7 +6,8 @@ export async function criarDrillController(
   res: Response,
   next: NextFunction,
 ) {
-  const data = req.body;
+  const data = (req as any).validatedData;
+
   const drill = await criarDrill(data);
 
   return res.status(201).json(drill);

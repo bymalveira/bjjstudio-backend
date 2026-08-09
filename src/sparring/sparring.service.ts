@@ -1,15 +1,8 @@
-import type { Position, SparringResult } from "../../generated/prisma/enums";
+import * as z from "zod";
+import { criarSparringSchema } from "./sparring.schema";
 import { prisma } from "../lib/prisma";
 
-type SparringRoundInput = {
-  resultado: SparringResult;
-  posicaoInicial: Position;
-  posicaoFinal: Position;
-  tempo: number;
-  nota?: string;
-  parceiroId: string;
-  trainingSessionId: string;
-};
+type SparringRoundInput = z.infer<typeof criarSparringSchema>;
 
 export async function criarSparring({
   resultado,

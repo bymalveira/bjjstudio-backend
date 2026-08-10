@@ -47,6 +47,8 @@ enum Position {
   LATERAL // {/* controle 100kg / cem quilo */}
   NORTE_SUL
   COSTAS // {/* controle de costas, com ou sem ganchos */}
+
+  NENHUMA // {/* Apenas Nenhuma posição */}
 }
 
 model TrainingSession {
@@ -72,7 +74,7 @@ model Drill {
   nota       String? // {/* observação livre, opcional */}
 
   trainingSessionId String // {/* chave estrangeira: a qual sessão esse drill pertence */}
-  trainingSession    TrainingSession @relation(fields: [trainingSessionId], references: [id], onDelete: Cascade) // {/* se a sessão for apagada, o drill some junto */}
+  trainingSession    TrainingSession @relation(fields: [trainingSessionId], references: [id], onDelete: Cascade) // {/* se a sessão for apagada, o drill some junto — um drill não existe sem a sessão-mãe */}
 }
 
 model SparringRound {
@@ -84,24 +86,24 @@ model SparringRound {
   nota           String? // {/* observação livre, opcional */}
 
   parceiroId String // {/* chave estrangeira: com quem foi o round (não é @unique, pois o mesmo parceiro pode aparecer em vários rounds) */}
-  parceiro   Partner @relation(fields: [parceiroId], references: [id], onDelete: Cascade) // {/* se o parceiro for apagado, os rounds com ele somem junto */}
+  parceiro   Partner @relation(fields: [parceiroId], references: [id], onDelete: Restrict) // {/* impede apagar o parceiro se ele tiver rounds registrados, pra não perder histórico de treino sem querer */}
 
   trainingSessionId String // {/* chave estrangeira: a qual sessão esse round pertence */}
-  trainingSession    TrainingSession @relation(fields: [trainingSessionId], references: [id], onDelete: Cascade) // {/* se a sessão for apagada, o round some junto */}
+  trainingSession    TrainingSession @relation(fields: [trainingSessionId], references: [id], onDelete: Cascade) // {/* se a sessão for apagada, o round some junto — um round não existe sem a sessão-mãe */}
 }
 
 model SpecificTraining {
-  id               String  @id @default(uuid()) // {/* identificador único do treino específico */}
-  guardaTrabalhada Position // {/* qual guarda foi o foco do treino */}
-  passagemTrabalhada String // {/* qual passagem foi trabalhada (texto livre, já que não é uma posição fixa) */}
-  funcionou        Boolean // {/* se a técnica funcionou ou não nesse treino */}
-  nota             String? // {/* observação livre sobre o que funcionou/não funcionou, opcional */}
+  id                  String  @id @default(uuid()) // {/* identificador único do treino específico */}
+  guardaTrabalhada    Position // {/* qual guarda foi o foco do treino */}
+  passagemTrabalhada  String // {/* qual passagem foi trabalhada (texto livre, já que não é uma posição fixa) */}
+  funcionou           Boolean // {/* se a técnica funcionou ou não nesse treino */}
+  nota                String? // {/* observação livre sobre o que funcionou/não funcionou, opcional */}
 
   parceiroId String // {/* chave estrangeira: com quem foi o treino específico */}
-  parceiro   Partner @relation(fields: [parceiroId], references: [id], onDelete: Cascade) // {/* se o parceiro for apagado, os treinos com ele somem junto */}
+  parceiro   Partner @relation(fields: [parceiroId], references: [id], onDelete: Restrict) // {/* impede apagar o parceiro se ele tiver treinos específicos registrados, pra não perder histórico de treino sem querer */}
 
   trainingSessionId String // {/* chave estrangeira: a qual sessão esse treino específico pertence */}
-  trainingSession    TrainingSession @relation(fields: [trainingSessionId], references: [id], onDelete: Cascade) // {/* se a sessão for apagada, o treino específico some junto */}
+  trainingSession    TrainingSession @relation(fields: [trainingSessionId], references: [id], onDelete: Cascade) // {/* se a sessão for apagada, o treino específico some junto — não existe sem a sessão-mãe */}
 }
 
 model Partner {

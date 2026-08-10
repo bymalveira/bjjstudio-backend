@@ -9,3 +9,5 @@ export const criarEspecificoSchema = z.object({
   parceiroId: z.string(),
   trainingSessionId: z.string(),
 });
+
+export const atualizarEspecificoSchema = criarEspecificoSchema.partial();

@@ -10,7 +10,7 @@ import { router as sessionsRoutes } from "./sessions/sessions.routes";
 import { router as partnersRouter } from "./partners/partners.routes";
 import { router as sparringRouter } from "./sparring/sparring.route";
 import { router as drillsRouter } from "./drills/drills.route";
-import { router as spacificRouter } from "./specific-training/spacific-training.route";
+import { router as spacificRouter } from "./specific-training/specific-training.route";
 
 const app = express();
 

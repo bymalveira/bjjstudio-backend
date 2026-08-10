@@ -7,3 +7,5 @@ export const criarDrillSchema = z.object({
   nota: z.string().optional(),
   trainingSessionId: z.string(),
 });
+
+export const atualizarDrillSchema = criarDrillSchema.partial();

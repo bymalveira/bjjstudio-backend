@@ -5,3 +5,5 @@ export const criarParceiroSchema = z.object({
   nome: z.string(),
   faixa: z.enum(Belts),
 });
+
+export const atualizarParceiroSchema = criarParceiroSchema.partial();

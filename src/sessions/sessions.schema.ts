@@ -7,3 +7,5 @@ export const criarSessaoSchema = z.object({
   notaGeral: z.number(),
   data: z.string(),
 });
+
+export const atualizarSessaoSchema = criarSessaoSchema.partial();

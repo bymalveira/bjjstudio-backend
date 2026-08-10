@@ -10,3 +10,5 @@ export const criarSparringSchema = z.object({
   parceiroId: z.string(),
   trainingSessionId: z.string(),
 });
+
+export const atualizarSparringSchema = criarSparringSchema.partial();

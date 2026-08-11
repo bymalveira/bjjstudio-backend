@@ -8,9 +8,10 @@ import helmet from "helmet";
 import morgan from "morgan";
 import { router as sessionsRoutes } from "./sessions/sessions.routes";
 import { router as partnersRouter } from "./partners/partners.routes";
-import { router as sparringRouter } from "./sparring/sparring.route";
-import { router as drillsRouter } from "./drills/drills.route";
-import { router as spacificRouter } from "./specific-training/specific-training.route";
+import { router as sparringRouter } from "./sparring/sparring.routes";
+import { router as drillsRouter } from "./drills/drills.routes";
+import { router as specificTrainingRouter } from "./specific-training/specific-training.routes";
+import { router as statsRouter } from "./stats/stats.routes";
 
 const app = express();
 
@@ -26,7 +27,8 @@ app.use("/api", sessionsRoutes);
 app.use("/api", partnersRouter);
 app.use("/api", sparringRouter);
 app.use("/api", drillsRouter);
-app.use("/api", spacificRouter);
+app.use("/api", specificTrainingRouter);
+app.use("/api/stats", statsRouter);
 
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).send(error.message);
